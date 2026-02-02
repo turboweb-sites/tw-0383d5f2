@@ -3,7 +3,7 @@ import { Board, Position, Piece, GameState } from '../types/chess';
 import { initializeBoard, getValidMoves, makeMove, isInCheck, isCheckmate, isStalemate } from '../utils/chessLogic';
 import { getBestMove } from '../utils/chessBot';
 
-export function useChessGame(playerColor: 'white' | 'black') {
+export function useChessGame(playerColor: 'white' | 'black', gameMode: 'bot' | 'pvp' = 'bot') {
   const [board, setBoard] = useState<Board>(initializeBoard());
   const [currentTurn, setCurrentTurn] = useState<'white' | 'black'>('white');
   const [selectedSquare, setSelectedSquare] = useState<Position | null>(null);
@@ -38,6 +38,12 @@ export function useChessGame(playerColor: 'white' | 'black') {
   const selectSquare = useCallback((position: Position) => {
     const piece = board[position.row][position.col];
 
+    // В режиме PvP можно ходить любым цветом в свой ход
+    // В режиме с ботом можно ходить только своим цветом
+    const canMove = gameMode === 'pvp' 
+      ? piece && piece.color === currentTurn
+      : piece && piece.color === currentTurn && currentTurn === playerColor;
+
     // If a square is already selected
     if (selectedSquare) {
       const isValidMove = validMoves.some(
@@ -66,7 +72,7 @@ export function useChessGame(playerColor: 'white' | 'black') {
         // Clear selection
         setSelectedSquare(null);
         setValidMoves([]);
-      } else if (piece && piece.color === currentTurn && currentTurn === playerColor) {
+      } else if (canMove) {
         // Select new piece
         setSelectedSquare(position);
         setValidMoves(getValidMoves(board, position));
@@ -75,16 +81,16 @@ export function useChessGame(playerColor: 'white' | 'black') {
         setSelectedSquare(null);
         setValidMoves([]);
       }
-    } else if (piece && piece.color === currentTurn && currentTurn === playerColor) {
+    } else if (canMove) {
       // Select piece
       setSelectedSquare(position);
       setValidMoves(getValidMoves(board, position));
     }
-  }, [board, selectedSquare, validMoves, currentTurn, playerColor, updateGameState]);
+  }, [board, selectedSquare, validMoves, currentTurn, playerColor, gameMode, updateGameState]);
 
-  // Bot moves
+  // Bot moves (только в режиме с ботом)
   useEffect(() => {
-    if (currentTurn !== playerColor && !gameState.isCheckmate && !gameState.isStalemate) {
+    if (gameMode === 'bot' && currentTurn !== playerColor && !gameState.isCheckmate && !gameState.isStalemate) {
       const timer = setTimeout(() => {
         const move = getBestMove(board, currentTurn);
         if (move) {
@@ -107,7 +113,7 @@ export function useChessGame(playerColor: 'white' | 'black') {
 
       return () => clearTimeout(timer);
     }
-  }, [currentTurn, playerColor, board, gameState, updateGameState]);
+  }, [currentTurn, playerColor, board, gameState, gameMode, updateGameState]);
 
   // Reset game
   const resetGame = useCallback(() => {

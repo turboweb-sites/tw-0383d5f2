@@ -1,4 +1,4 @@
-import { AlertCircle, Clock, Trophy } from 'lucide-react';
+import { AlertCircle, Clock, Trophy, Users } from 'lucide-react';
 import { Piece } from '../types/chess';
 
 interface GameStatusProps {
@@ -9,6 +9,7 @@ interface GameStatusProps {
   winner: 'white' | 'black' | null;
   capturedPieces: { white: Piece[]; black: Piece[] };
   playerColor: 'white' | 'black';
+  gameMode: 'bot' | 'pvp';
 }
 
 const pieceValues: Record<string, number> = {
@@ -27,7 +28,8 @@ export default function GameStatus({
   isStalemate,
   winner,
   capturedPieces,
-  playerColor
+  playerColor,
+  gameMode
 }: GameStatusProps) {
   const calculateMaterialAdvantage = () => {
     const whiteValue = capturedPieces.black.reduce((sum, piece) => sum + pieceValues[piece.type], 0);
@@ -41,12 +43,18 @@ export default function GameStatus({
   return (
     <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-white">Статус игры</h2>
+        <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+          Статус игры
+          {gameMode === 'pvp' && <Users className="w-5 h-5 text-blue-400" />}
+        </h2>
         {!isCheckmate && !isStalemate && (
           <div className="flex items-center gap-2">
             <Clock className="w-5 h-5 text-gray-400" />
             <span className="text-gray-300">
-              {isPlayerTurn ? 'Ваш ход' : 'Ход компьютера'}
+              {gameMode === 'pvp' 
+                ? `Ход ${currentTurn === 'white' ? 'белых' : 'черных'}`
+                : isPlayerTurn ? 'Ваш ход' : 'Ход компьютера'
+              }
             </span>
           </div>
         )}
@@ -59,16 +67,39 @@ export default function GameStatus({
         </div>
       )}
 
+      {isCheckmate && (
+        <div className="flex items-center gap-2 text-yellow-400 bg-yellow-500/20 rounded-lg p-3">
+          <Trophy className="w-5 h-5" />
+          <span className="font-medium">
+            Мат! Победа {winner === 'white' ? 'белых' : 'черных'}
+          </span>
+        </div>
+      )}
+
+      {isStalemate && (
+        <div className="flex items-center gap-2 text-blue-400 bg-blue-500/20 rounded-lg p-3">
+          <AlertCircle className="w-5 h-5" />
+          <span className="font-medium">Пат! Ничья</span>
+        </div>
+      )}
+
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-gray-400">Ход:</span>
           <span className="text-white font-medium">
             {currentTurn === 'white' ? 'Белые' : 'Черные'}
-            {!isCheckmate && !isStalemate && (
+            {gameMode === 'bot' && !isCheckmate && !isStalemate && (
               <span className="text-gray-400 ml-2">
                 ({isPlayerTurn ? 'Вы' : 'Компьютер'})
               </span>
             )}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-gray-400">Режим:</span>
+          <span className="text-white font-medium">
+            {gameMode === 'pvp' ? 'Игра вдвоем' : 'Против компьютера'}
           </span>
         </div>
 

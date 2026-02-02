@@ -4,6 +4,7 @@ import { Board, Position } from '../types/chess';
 interface ChessBoardProps {
   board: Board;
   playerColor: 'white' | 'black';
+  gameMode: 'bot' | 'pvp';
   selectedSquare: Position | null;
   validMoves: Position[];
   lastMove: { from: Position; to: Position } | null;
@@ -15,6 +16,7 @@ interface ChessBoardProps {
 export default function ChessBoard({
   board,
   playerColor,
+  gameMode,
   selectedSquare,
   validMoves,
   lastMove,
@@ -22,7 +24,11 @@ export default function ChessBoard({
   currentTurn,
   onSquareClick
 }: ChessBoardProps) {
-  const isFlipped = playerColor === 'black';
+  // В режиме PvP доска переворачивается в зависимости от чьего хода
+  // В режиме с ботом доска ориентирована по цвету игрока
+  const isFlipped = gameMode === 'pvp' 
+    ? currentTurn === 'black'
+    : playerColor === 'black';
   
   const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
   const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
@@ -55,7 +61,7 @@ export default function ChessBoard({
   };
 
   return (
-    <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 md:p-6 shadow-2xl">
+    <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 md:p-6 shadow-2xl transition-all duration-700">
       <div className="relative">
         {/* Column labels */}
         <div className="flex mb-2">
@@ -106,6 +112,18 @@ export default function ChessBoard({
           </div>
         </div>
       </div>
+
+      {/* Turn indicator for PvP mode */}
+      {gameMode === 'pvp' && (
+        <div className="mt-4 text-center">
+          <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-6 py-2">
+            <div className={`w-3 h-3 rounded-full ${currentTurn === 'white' ? 'bg-white' : 'bg-gray-900'}`}></div>
+            <span className="text-white font-medium">
+              Ход {currentTurn === 'white' ? 'белых' : 'черных'}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
