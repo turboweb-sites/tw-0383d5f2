@@ -1,10 +1,9 @@
-export type PieceType = 'king' | 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn';
+export type PieceType = 'pawn' | 'rook' | 'knight' | 'bishop' | 'queen' | 'king';
 export type PieceColor = 'white' | 'black';
 
 export interface Piece {
   type: PieceType;
   color: PieceColor;
-  hasMoved?: boolean;
 }
 
 export interface Position {
@@ -12,11 +11,33 @@ export interface Position {
   col: number;
 }
 
+export interface Move {
+  from: Position;
+  to: Position;
+}
+
 export type Board = (Piece | null)[][];
 
+export interface CastlingRights {
+  whiteKingside: boolean;
+  whiteQueenside: boolean;
+  blackKingside: boolean;
+  blackQueenside: boolean;
+}
+
 export interface GameState {
+  board: Board;
+  currentTurn: PieceColor;
+  castlingRights: CastlingRights;
+  enPassantTarget: Position | null;
+  halfmoveClock: number;
+  fullmoveNumber: number;
   isCheck: boolean;
   isCheckmate: boolean;
   isStalemate: boolean;
-  winner: 'white' | 'black' | null;
+  capturedPieces: {
+    white: Piece[];
+    black: Piece[];
+  };
+  moveHistory: string[];
 }
