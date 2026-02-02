@@ -10,31 +10,34 @@
 
 @layer components {
   .chess-square {
-    @apply w-20 h-20 flex items-center justify-center cursor-pointer transition-all duration-200;
+    @apply relative w-full h-full flex items-center justify-center cursor-pointer transition-all duration-200;
   }
   
   .chess-square:hover {
-    @apply ring-4 ring-blue-400 ring-opacity-50;
+    @apply brightness-110;
   }
   
   .chess-piece {
-    @apply text-6xl select-none cursor-grab active:cursor-grabbing;
+    @apply text-5xl md:text-6xl select-none cursor-pointer transition-transform duration-200;
   }
   
-  .possible-move {
-    @apply relative;
+  .chess-piece:hover {
+    @apply scale-110;
   }
   
-  .possible-move::after {
-    content: '';
-    @apply absolute inset-0 bg-green-400 bg-opacity-30 rounded-full w-8 h-8 m-auto;
+  .valid-move {
+    @apply after:content-[''] after:absolute after:w-3 after:h-3 after:bg-green-500 after:rounded-full after:opacity-70;
   }
   
   .selected-square {
-    @apply ring-4 ring-yellow-400 !important;
+    @apply ring-4 ring-yellow-400 ring-inset;
   }
   
   .last-move {
-    @apply bg-yellow-200 bg-opacity-50;
+    @apply bg-yellow-200/50;
+  }
+  
+  .check-square {
+    @apply bg-red-500/30;
   }
 }

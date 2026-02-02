@@ -4,30 +4,30 @@ interface ChessPieceProps {
   piece: Piece;
 }
 
-const pieceUnicode: Record<string, string> = {
-  'white-king': '♔',
-  'white-queen': '♕',
-  'white-rook': '♖',
-  'white-bishop': '♗',
-  'white-knight': '♘',
-  'white-pawn': '♙',
-  'black-king': '♚',
-  'black-queen': '♛',
-  'black-rook': '♜',
-  'black-bishop': '♝',
-  'black-knight': '♞',
-  'black-pawn': '♟',
+const pieceUnicode: Record<string, Record<string, string>> = {
+  white: {
+    king: '♔',
+    queen: '♕',
+    rook: '♖',
+    bishop: '♗',
+    knight: '♘',
+    pawn: '♙'
+  },
+  black: {
+    king: '♚',
+    queen: '♛',
+    rook: '♜',
+    bishop: '♝',
+    knight: '♞',
+    pawn: '♟'
+  }
 };
 
 export default function ChessPiece({ piece }: ChessPieceProps) {
-  const pieceKey = `${piece.color}-${piece.type}`;
-  const unicode = pieceUnicode[pieceKey];
-
+  const unicode = pieceUnicode[piece.color][piece.type];
+  
   return (
-    <div 
-      className={`chess-piece ${piece.color === 'white' ? 'text-white drop-shadow-lg' : 'text-gray-900'}`}
-      style={{ textShadow: piece.color === 'white' ? '2px 2px 3px rgba(0,0,0,0.5)' : 'none' }}
-    >
+    <div className={`chess-piece ${piece.color === 'white' ? 'text-white drop-shadow-lg' : 'text-gray-900'}`}>
       {unicode}
     </div>
   );
