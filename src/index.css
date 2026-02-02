@@ -1,3 +1,40 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-100;
+  }
+}
+
+@layer components {
+  .chess-square {
+    @apply w-20 h-20 flex items-center justify-center cursor-pointer transition-all duration-200;
+  }
+  
+  .chess-square:hover {
+    @apply ring-4 ring-blue-400 ring-opacity-50;
+  }
+  
+  .chess-piece {
+    @apply text-6xl select-none cursor-grab active:cursor-grabbing;
+  }
+  
+  .possible-move {
+    @apply relative;
+  }
+  
+  .possible-move::after {
+    content: '';
+    @apply absolute inset-0 bg-green-400 bg-opacity-30 rounded-full w-8 h-8 m-auto;
+  }
+  
+  .selected-square {
+    @apply ring-4 ring-yellow-400 !important;
+  }
+  
+  .last-move {
+    @apply bg-yellow-200 bg-opacity-50;
+  }
+}
